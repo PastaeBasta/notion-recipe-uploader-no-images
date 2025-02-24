@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 
 NOTION_API_KEY = os.getenv("NOTION_API_KEY")
-NOTION_DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
+NOTION_DATABASE_ID = os.getenv("DATABASE_ID")  # Updated to match Railway's variable name
 NOTION_VERSION = "2022-06-28"
 NOTION_API_URL = "https://api.notion.com/v1/pages"
 
@@ -18,7 +18,7 @@ def add_recipe():
     # Check for required environment variables before proceeding
     if not NOTION_API_KEY or not NOTION_DATABASE_ID:
         return jsonify({
-            "error": "Missing required environment variables: NOTION_API_KEY and/or NOTION_DATABASE_ID"
+            "error": "Missing required environment variables: NOTION_API_KEY and/or DATABASE_ID"
         }), 500
 
     try:
