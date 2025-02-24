@@ -45,22 +45,11 @@ def add_recipe():
             },
             "Chef Notes": {
                 "rich_text": [{"text": {"content": data.get("chef_notes", "")}}]
+            },
+            "Portions": {
+                "number": data["portions"]  # ✅ New field for portions
             }
         }
-
-        # Handle image uploads (external URLs)
-        image_files = []
-        if "images" in data and isinstance(data["images"], list):
-            for image in data["images"]:
-                if "file_url" in image:
-                    image_files.append({
-                        "name": os.path.basename(image["file_url"]),
-                        "type": "external",  # ✅ Correct Notion type for external URLs
-                        "external": {"url": image["file_url"]}
-                    })
-
-        if image_files:
-            properties["Images"] = {"files": image_files}
 
         payload = {
             "parent": {"database_id": NOTION_DATABASE_ID},
