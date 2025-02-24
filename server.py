@@ -47,7 +47,7 @@ def add_recipe():
                 "rich_text": [{"text": {"content": data.get("chef_notes", "")}}]
             },
             "Portions": {
-                "rich_text": [{"text": {"content": data["portions"]}}]  # ✅ Now stored as text instead of a number
+                "rich_text": [{"text": {"content": str(data.get("portions", "N/A"))}}]  # ✅ Fix: Always a string
             }
         }
 
