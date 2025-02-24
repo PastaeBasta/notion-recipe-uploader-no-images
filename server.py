@@ -9,6 +9,10 @@ NOTION_DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
 NOTION_VERSION = "2022-06-28"
 NOTION_API_URL = "https://api.notion.com/v1/pages"
 
+# Check that the necessary environment variables are set
+if NOTION_API_KEY is None or NOTION_DATABASE_ID is None:
+    raise Exception("Missing required environment variables: NOTION_API_KEY and/or NOTION_DATABASE_ID")
+
 @app.route("/")
 def home():
     return "Notion Recipe Uploader is running!"
@@ -23,7 +27,6 @@ def add_recipe():
             "Notion-Version": NOTION_VERSION
         }
 
-        # Build the required properties
         properties = {
             "Recipe Name": {
                 "title": [{"text": {"content": data["name"]}}]
@@ -45,7 +48,7 @@ def add_recipe():
             }
         }
 
-        # Optionally add the Images property if images are provided
+        # Optionally add the Images property if provided
         if "images" in data and data["images"]:
             properties["Images"] = {
                 "files": [{"name": "recipe_image", "external": {"url": data["images"][0]}}]
