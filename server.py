@@ -9,16 +9,18 @@ NOTION_DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
 NOTION_VERSION = "2022-06-28"
 NOTION_API_URL = "https://api.notion.com/v1/pages"
 
-# Check that the necessary environment variables are set
-if NOTION_API_KEY is None or NOTION_DATABASE_ID is None:
-    raise Exception("Missing required environment variables: NOTION_API_KEY and/or NOTION_DATABASE_ID")
-
 @app.route("/")
 def home():
     return "Notion Recipe Uploader is running!"
 
 @app.route("/add-recipe", methods=["POST"])
 def add_recipe():
+    # Check for required environment variables before proceeding
+    if not NOTION_API_KEY or not NOTION_DATABASE_ID:
+        return jsonify({
+            "error": "Missing required environment variables: NOTION_API_KEY and/or NOTION_DATABASE_ID"
+        }), 500
+
     try:
         data = request.json
         headers = {
@@ -27,6 +29,7 @@ def add_recipe():
             "Notion-Version": NOTION_VERSION
         }
 
+        # Build properties for the Notion payload
         properties = {
             "Recipe Name": {
                 "title": [{"text": {"content": data["name"]}}]
