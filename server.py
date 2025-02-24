@@ -48,15 +48,15 @@ def add_recipe():
             }
         }
 
-        # Handle image file uploads (from GPT chat)
+        # Handle image uploads (external URLs)
         image_files = []
         if "images" in data and isinstance(data["images"], list):
             for image in data["images"]:
                 if "file_url" in image:
                     image_files.append({
                         "name": os.path.basename(image["file_url"]),
-                        "type": "file",
-                        "file": {"url": image["file_url"]}
+                        "type": "external",  # ✅ Correct Notion type for external URLs
+                        "external": {"url": image["file_url"]}
                     })
 
         if image_files:
