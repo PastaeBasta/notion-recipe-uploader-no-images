@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 
 NOTION_API_KEY = os.getenv("NOTION_API_KEY")
-NOTION_DATABASE_ID = os.getenv("DATABASE_ID")  # Updated to match Railway's variable name
+NOTION_DATABASE_ID = os.getenv("DATABASE_ID")
 NOTION_VERSION = "2022-06-28"
 NOTION_API_URL = "https://api.notion.com/v1/pages"
 
@@ -15,11 +15,8 @@ def home():
 
 @app.route("/add-recipe", methods=["POST"])
 def add_recipe():
-    # Check for required environment variables before proceeding
     if not NOTION_API_KEY or not NOTION_DATABASE_ID:
-        return jsonify({
-            "error": "Missing required environment variables: NOTION_API_KEY and/or DATABASE_ID"
-        }), 500
+        return jsonify({"error": "Missing required environment variables: NOTION_API_KEY and/or DATABASE_ID"}), 500
 
     try:
         data = request.json
@@ -47,15 +44,23 @@ def add_recipe():
                 "multi_select": [{"name": data["difficulty_level"]}]
             },
             "Chef Notes": {
-                "rich_text": [{"text": {"content": data["chef_notes"]}}]
+                "rich_text": [{"text": {"content": data.get("chef_notes", "")}}]
             }
         }
 
-        # Optionally add the Images property if provided
-        if "images" in data and data["images"]:
-            properties["Images"] = {
-                "files": [{"name": "recipe_image", "external": {"url": data["images"][0]}}]
-            }
+        # Handle image file uploads (from GPT chat)
+        image_files = []
+        if "images" in data and isinstance(data["images"], list):
+            for image in data["images"]:
+                if "file_url" in image:
+                    image_files.append({
+                        "name": os.path.basename(image["file_url"]),
+                        "type": "file",
+                        "file": {"url": image["file_url"]}
+                    })
+
+        if image_files:
+            properties["Images"] = {"files": image_files}
 
         payload = {
             "parent": {"database_id": NOTION_DATABASE_ID},
