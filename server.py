@@ -46,8 +46,9 @@ def add_recipe():
             "Chef Notes": {
                 "rich_text": [{"text": {"content": data.get("chef_notes", "")}}]
             },
-           "Portions": {
-    "rich_text": [{"text": {"content": data["portions"]}}]
+            "Portions": {
+                "rich_text": [{"text": {"content": data["portions"]}}]  # ✅ Now stored as text instead of a number
+            }
         }
 
         payload = {
